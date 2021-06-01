@@ -1,8 +1,6 @@
 package main
 
 import (
-	"database/sql"
-	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -26,12 +24,11 @@ func main() {
 	}
 
 	fmt.Println("Connected!")
-	var city City
-	if err := db.Get(&city, "SELECT * FROM city WHERE Name=?", os.Args[1]); errors.Is(err, sql.ErrNoRows) {
-		log.Printf("no such city Name = %s", os.Args[1])
-	} else if err != nil {
-		log.Fatalf("DB Error: %s", err)
-	}
+	cities := []City{}
+	db.Select(&cities, "SELECT * FROM city WHERE CountryCode='JPN'")
 
-	fmt.Printf("%sの人口は%d人です\n", os.Args[1], city.Population)
+	fmt.Println("日本の都市一覧")
+	for _, city := range cities {
+		fmt.Printf("都市名: %s, 人口: %d人\n", city.Name, city.Population)
+	}
 }
